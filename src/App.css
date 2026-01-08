@@ -1,38 +1,205 @@
-.App {
-  text-align: center;
+/* RESET */
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+body { background-color: #f4f6f8; color: #333; }
+
+/* --- COLORES --- */
+:root {
+  --primary: #4a69bd; /* Azul */
+  --accent: #ff6b00;  /* Naranja */
+  --dark: #2c3e50;
+  --white: #ffffff;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+/* --- LOGICA ADAPTATIVA (CONTENEDORES FIJOS) --- */
+.main-container { margin: 0 auto; padding: 20px; min-height: 80vh; }
+
+@media (min-width: 1024px) {
+  .main-container.desktop { width: 1000px; }
+  .mobile-nav, .tablet-nav, .mobile-product-list { display: none !important; }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+@media (min-width: 768px) and (max-width: 1023px) {
+  .main-container.tablet { width: 720px; }
+  .desktop-nav, .mobile-nav, .mobile-product-list { display: none !important; }
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+@media (max-width: 767px) {
+  .main-container.mobile { width: 100%; max-width: 360px; }
+  .desktop-nav, .tablet-nav, .desktop-product-grid { display: none !important; }
+}
+
+/* --- 1. NAVEGACIÓN DESKTOP --- */
+.desktop-nav {
+  background: var(--primary); color: white; height: 70px;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0 calc((100% - 1000px) / 2); 
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+.nav-left, .nav-right { display: flex; align-items: center; gap: 20px; padding: 0 20px; }
+.logo { font-size: 1.5rem; font-weight: 800; }
+.desktop-links a { color: white; text-decoration: none; margin-right: 15px; font-weight: 500; }
+
+/* Buscador Desktop */
+.search-bar-desktop {
+  background: rgba(255,255,255,0.2);
+  border-radius: 5px; padding: 5px 10px; display: flex;
+}
+.search-bar-desktop input {
+  background: transparent; border: none; color: white; outline: none; width: 200px;
+}
+.search-bar-desktop input::placeholder { color: rgba(255,255,255,0.7); }
+.search-bar-desktop button { background: none; border: none; color: white; cursor: pointer; }
+
+/* CARRITO PC - AHORA BLANCO LIMPIO */
+.cart-link-desktop {
+  background: transparent; /* Quitamos el naranja */
+  color: white; 
+  text-decoration: none; 
+  font-weight: bold; 
+  display: flex; 
+  align-items: center; 
+  gap: 8px;
+  border: 1px solid rgba(255,255,255,0.3); /* Un borde sutil opcional */
+  padding: 5px 12px;
+  border-radius: 20px;
+}
+.cart-link-desktop:hover { background: rgba(255,255,255,0.1); }
+.icon-link { color: white; font-size: 1.2rem; cursor: pointer; }
+/* --- 2. NAVEGACIÓN MÓVIL --- */
+.mobile-nav {
+  background: var(--primary); color: white; position: sticky; top: 0; z-index: 100;
+  padding-bottom: 10px;
+}
+.mobile-nav-top {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 15px; height: 60px;
+}
+.hamburger-btn { background: none; border: none; color: white; cursor: pointer; }
+.logo-mobile { font-size: 1.3rem; margin-left: 10px; }
+
+/* NUEVO GRUPO DE ICONOS MÓVIL */
+.mobile-icons-group {
   display: flex;
-  flex-direction: column;
+  gap: 15px;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+}
+.mobile-icon {
   color: white;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
 }
 
-.App-link {
-  color: #61dafb;
+/* --- BUSCADOR MÓVIL (ESTILO TRANSPARENTE) --- */
+.mobile-search-container { 
+  padding: 0 15px; 
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.search-bar-mobile {
+  /* Fondo semitransparente (Efecto Glass) */
+  background: rgba(255, 255, 255, 0.2); 
+  border-radius: 20px; 
+  padding: 8px 15px;
+  display: flex; 
+  align-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.1); /* Borde sutil */
 }
+
+.search-bar-mobile input {
+  background: transparent;
+  border: none;
+  width: 100%;
+  outline: none;
+  font-size: 0.95rem;
+  color: white; /* TEXTO BLANCO */
+}
+
+/* Color del texto de ayuda (placeholder) */
+.search-bar-mobile input::placeholder {
+  color: rgba(255, 255, 255, 0.7); 
+}
+
+.search-bar-mobile button {
+  background: none;
+  border: none;
+  color: white; /* LUPA BLANCA */
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+/* MENÚ LATERAL MÓVIL */
+.mobile-menu-overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+  background: rgba(0,0,0,0.5); z-index: 200;
+}
+.mobile-menu-content {
+  background: white; width: 70%; height: 100%; padding: 20px;
+  display: flex; flex-direction: column; gap: 15px;
+}
+.menu-header { display: flex; justify-content: space-between; color: var(--dark); margin-bottom: 20px; }
+.menu-header button { background: none; border: none; font-size: 1.5rem; }
+.mobile-link {
+  text-decoration: none; color: var(--dark); font-size: 1.1rem; padding: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+/* --- 3. PRODUCTOS --- */
+.desktop-product-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin-top: 20px;
+}
+/* En tablet usamos el mismo grid pero forzamos 2 columnas */
+.tablet .desktop-product-grid { grid-template-columns: repeat(2, 1fr); }
+
+.desktop-product-card {
+  background: white; border-radius: 10px; overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: transform 0.2s;
+}
+.desktop-product-card:hover { transform: translateY(-5px); }
+.img-container { height: 200px; position: relative; }
+.img-container img { width: 100%; height: 100%; object-fit: cover; }
+.wishlist-btn {
+  position: absolute; top: 10px; right: 10px; background: white; border: none;
+  border-radius: 50%; width: 30px; height: 30px; cursor: pointer; color: #ccc;
+}
+.info { padding: 15px; }
+.info span { font-size: 0.8rem; color: #888; text-transform: uppercase; }
+.info h3 { margin: 5px 0 10px; font-size: 1.1rem; }
+.price-row { display: flex; justify-content: space-between; align-items: center; }
+.price { color: var(--accent); font-weight: bold; font-size: 1.2rem; }
+.add-btn {
+  background: var(--dark); color: white; border: none; padding: 5px 15px;
+  border-radius: 5px; cursor: pointer;
+}
+
+/* LISTA MÓVIL */
+.mobile-product-list { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
+.mobile-product-card {
+  background: white; display: flex; border-radius: 10px; overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.mobile-product-card img { width: 120px; height: 120px; object-fit: cover; }
+.mobile-info { padding: 10px; flex: 1; display: flex; flex-direction: column; justify-content: center; }
+.mobile-info h3 { font-size: 1rem; margin: 5px 0; }
+.mobile-add-btn {
+  background: var(--accent); color: white; border: none; padding: 5px;
+  border-radius: 5px; margin-top: 5px; cursor: pointer;
+}
+
+/* --- GENERALES --- */
+.width-badge {
+  background: #e1e1e1; color: #555; text-align: center; padding: 5px;
+  border-radius: 4px; font-size: 0.8rem; margin-bottom: 20px;
+}
+.hero {
+  background: linear-gradient(135deg, var(--dark), var(--primary));
+  color: white; padding: 40px 20px; border-radius: 10px; text-align: center;
+}
+.section-title { border-bottom: 3px solid var(--accent); display: inline-block; margin-top: 30px; }
+.benefits { display: flex; gap: 10px; margin-top: 40px; flex-wrap: wrap; }
+.benefit-card {
+  flex: 1; background: white; padding: 15px; text-align: center; border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05); min-width: 140px;
+}
+footer { text-align: center; padding: 20px; color: #888; font-size: 0.9rem; margin-top: 40px; }
