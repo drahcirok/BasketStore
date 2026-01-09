@@ -73,3 +73,5 @@ El proyecto está configurado para despliegue automático mediante `gh-pages`.
 
 ```bash
 npm run deploy
+```
+Desarrollado por: drahcirok
