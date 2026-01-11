@@ -1,70 +1,77 @@
-# Getting Started with Create React App
+# BasketStore Ecuador | Adaptive Web Design
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Aplicación de comercio electrónico especializada en artículos de basketball, desarrollada bajo la metodología de Diseño Web Adaptativo (AWD). Este proyecto demuestra la implementación de interfaces gráficas que se adaptan a dispositivos específicos (Móvil, Tablet, Escritorio) mediante puntos de ruptura fijos y renderizado condicional de componentes.
 
-## Available Scripts
+## 🔗 Demo en Vivo
 
-In the project directory, you can run:
+Puedes visualizar el proyecto desplegado en producción aquí:
+**[https://drahcirok.github.io/BasketStore](https://drahcirok.github.io/BasketStore)**
 
-### `npm start`
+## 📋 Descripción del Proyecto
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+BasketStore no es simplemente una web responsiva fluida; es una aplicación **adaptativa**. El sistema detecta el ancho del dispositivo del usuario y sirve una experiencia de usuario (UX) y una interfaz (UI) optimizada específicamente para ese entorno.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+A diferencia del diseño responsivo tradicional que "estira" los elementos, esta aplicación modifica la estructura del DOM y los estilos para ofrecer:
+* **Móvil:** Navegación optimizada para pulgares, menús laterales y búsqueda persistente.
+* **Escritorio:** Mega menús, grids expandidos y controles de precisión (mouse).
 
-### `npm test`
+## 🛠️ Stack Tecnológico
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+* **Frontend Library:** React 18
+* **Styling:** CSS3 (Vanilla, Metodología BEM)
+* **Iconography:** React Icons (FontAwesome)
+* **Deployment:** GitHub Pages
+* **Version Control:** Git
 
-### `npm run build`
+## ✨ Funcionalidades Principales
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### 1. Arquitectura Adaptativa (AWD)
+Implementación de lógica de detección de viewport (`window.innerWidth`) para renderizar componentes distintos según el dispositivo:
+* **Mobile View (< 768px):** Contenedor fijo al 100% (max 360px). Header compacto, menú hamburguesa y barra de búsqueda estilo Glassmorphism.
+* **Tablet View (768px - 1023px):** Contenedor fijo de 720px. Grid de productos de 2 columnas.
+* **Desktop View (>= 1024px):** Contenedor fijo de 1000px. Grid de 3 columnas y navegación horizontal completa.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### 2. Gestión de Estado (Shopping Cart)
+Sistema de carrito de compras funcional desarrollado con React Hooks (`useState`, `useEffect`):
+* Persistencia de ítems durante la sesión.
+* Cálculo dinámico de subtotales y totales.
+* Lógica de incremento/decremento de stock y eliminación de ítems.
+* **Diseño Diferenciado:** El carrito en móvil presenta un layout horizontal compacto, mientras que en escritorio utiliza un layout tabular expandido.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### 3. Página de Detalle de Producto (PDP)
+Navegación fluida SPA (Single Page Application) sin recargas. Al seleccionar un producto, la interfaz cambia para mostrar especificaciones detalladas, imágenes en alta resolución y opciones de compra, manteniendo la consistencia visual del tema.
 
-### `npm run eject`
+### 4. UI/UX Polish
+* **Glassmorphism:** Efectos de transparencia y desenfoque en barras de búsqueda para integración con fondos sólidos.
+* **Feedback Visual:** Estados de interacción (Hover, Active) en botones y tarjetas de producto.
+* **Consistencia de Marca:** Paleta de colores unificada (Primary Blue `#4a69bd`, Accent Orange `#ff6b00`, Success Green `#27ae60`).
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## ⚙️ Instalación y Despliegue Local
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Para ejecutar este proyecto en tu entorno local, sigue estos pasos:
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+1.  **Clonar el repositorio**
+    ```bash
+    git clone [https://github.com/drahcirok/BasketStore.git](https://github.com/drahcirok/BasketStore.git)
+    cd BasketStore
+    ```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+2.  **Instalar dependencias**
+    ```bash
+    npm install
+    ```
 
-## Learn More
+3.  **Ejecutar servidor de desarrollo**
+    ```bash
+    npm start
+    ```
+    La aplicación se iniciará en `http://localhost:3000`.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## 🚀 Despliegue
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+El proyecto está configurado para despliegue automático mediante `gh-pages`.
 
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+```bash
+npm run deploy
+```
+*Desarrollado por drahcirok*
