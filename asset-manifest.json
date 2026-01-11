@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/BasketStore/static/css/main.2d819920.css",
-    "main.js": "/BasketStore/static/js/main.275c06e6.js",
+    "main.css": "/BasketStore/static/css/main.a6286936.css",
+    "main.js": "/BasketStore/static/js/main.e64a0d92.js",
     "static/js/453.f9bd3c7d.chunk.js": "/BasketStore/static/js/453.f9bd3c7d.chunk.js",
     "index.html": "/BasketStore/index.html",
-    "main.2d819920.css.map": "/BasketStore/static/css/main.2d819920.css.map",
-    "main.275c06e6.js.map": "/BasketStore/static/js/main.275c06e6.js.map",
+    "main.a6286936.css.map": "/BasketStore/static/css/main.a6286936.css.map",
+    "main.e64a0d92.js.map": "/BasketStore/static/js/main.e64a0d92.js.map",
     "453.f9bd3c7d.chunk.js.map": "/BasketStore/static/js/453.f9bd3c7d.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.2d819920.css",
-    "static/js/main.275c06e6.js"
+    "static/css/main.a6286936.css",
+    "static/js/main.e64a0d92.js"
   ]
 }
