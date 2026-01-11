@@ -239,3 +239,26 @@ body { background-color: #f4f6f8; color: #333; }
 footer { text-align: center; padding: 30px; color: #999; font-size: 0.9rem; margin-top: 60px; border-top: 1px solid #eee; }
 
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+/* --- ESTILOS DE FAVORITOS (ADD-ON) --- */
+
+/* Corazón Activo (Rojo) */
+.wishlist-btn.active {
+  color: #e74c3c; /* Rojo Pasión */
+  background-color: #fadbd8; /* Fondo rosita suave */
+  border: 1px solid #e74c3c;
+}
+
+/* Efecto al presionar en la vista detalle */
+.pdp-fav-btn.active {
+  color: #e74c3c !important;
+  background-color: #fadbd8 !important;
+  border-color: #e74c3c !important;
+  animation: heartBeat 0.3s;
+}
+
+/* Animación de latido */
+@keyframes heartBeat {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}

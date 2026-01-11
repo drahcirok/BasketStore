@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
-import { FaShoppingCart, FaBars, FaTimes, FaSearch, FaUser, FaHeart, FaTrash, FaArrowLeft, FaMinus, FaPlus } from 'react-icons/fa';
+import { FaShoppingCart, FaBars, FaTimes, FaSearch, FaUser, FaHeart, FaTrash, FaArrowLeft, FaMinus, FaPlus, FaHeartBroken, FaSearchMinus } from 'react-icons/fa';
 
 // --- MOCK DATA ---
 const mockProducts = [
@@ -54,8 +54,8 @@ const mockProducts = [
   }
 ];
 
-// --- NAVEGACIÓN PC ---
-const DesktopNav = ({ onNavigate, cartCount }) => (
+// --- NAVEGACIÓN PC (Con Buscador Funcional) ---
+const DesktopNav = ({ onNavigate, cartCount, favCount, searchTerm, onSearch }) => (
   <nav className="desktop-nav">
     <div className="nav-left">
       <h1 className="logo" onClick={() => onNavigate('home')}>BasketStore</h1>
@@ -67,9 +67,18 @@ const DesktopNav = ({ onNavigate, cartCount }) => (
     
     <div className="nav-right">
       <div className="search-bar-desktop">
-        <input type="text" placeholder="Buscar productos..." />
+        <input 
+          type="text" 
+          placeholder="Buscar productos..." 
+          value={searchTerm}
+          onChange={onSearch} // Conectamos el evento
+        />
         <button><FaSearch /></button>
       </div>
+      
+      <a onClick={() => onNavigate('favorites')} className="icon-link" title="Mis Favoritos">
+        <FaHeart style={{ color: favCount > 0 ? '#e74c3c' : 'white' }} />
+      </a>
       
       <a className="icon-link"><FaUser /></a>
       <a onClick={() => onNavigate('cart')} className="cart-link-desktop">
@@ -79,8 +88,8 @@ const DesktopNav = ({ onNavigate, cartCount }) => (
   </nav>
 );
 
-// --- NAVEGACIÓN MÓVIL ---
-const MobileNav = ({ onNavigate, cartCount }) => {
+// --- NAVEGACIÓN MÓVIL (Con Buscador Funcional) ---
+const MobileNav = ({ onNavigate, cartCount, favCount, searchTerm, onSearch }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
@@ -93,6 +102,9 @@ const MobileNav = ({ onNavigate, cartCount }) => {
         <h1 className="logo-mobile" onClick={() => onNavigate('home')}>BasketStore</h1>
         
         <div className="mobile-icons-group">
+           <a onClick={() => onNavigate('favorites')} className="mobile-icon">
+             <FaHeart size={22} style={{ color: favCount > 0 ? '#e74c3c' : 'white' }} />
+           </a>
            <a className="mobile-icon"><FaUser size={22} /></a>
            <a onClick={() => onNavigate('cart')} className="mobile-icon" style={{position: 'relative'}}>
             <FaShoppingCart size={22} />
@@ -103,7 +115,12 @@ const MobileNav = ({ onNavigate, cartCount }) => {
 
       <div className="mobile-search-container">
         <div className="search-bar-mobile">
-          <input type="text" placeholder="Buscar productos..." />
+          <input 
+            type="text" 
+            placeholder="Buscar productos..." 
+            value={searchTerm}
+            onChange={onSearch} // Conectamos el evento
+          />
           <button><FaSearch /></button>
         </div>
       </div>
@@ -116,6 +133,7 @@ const MobileNav = ({ onNavigate, cartCount }) => {
               <button onClick={() => setIsMenuOpen(false)}><FaTimes /></button>
             </div>
             <a onClick={() => {onNavigate('home'); setIsMenuOpen(false)}} className="mobile-link">Inicio</a>
+            <a onClick={() => {onNavigate('favorites'); setIsMenuOpen(false)}} className="mobile-link">Mis Favoritos</a>
             <a onClick={() => {onNavigate('cart'); setIsMenuOpen(false)}} className="mobile-link">Mi Carrito</a>
             <a className="mobile-link">Ingresar como invitado</a>
           </div>
@@ -125,31 +143,53 @@ const MobileNav = ({ onNavigate, cartCount }) => {
   );
 };
 
-// --- COMPONENTE: GRID DE PRODUCTOS (Reutilizable) ---
-const ProductGrid = ({ products, onProductClick, onAddToCart }) => (
-  <div className="product-grid-adaptive">
-    {products.map(product => (
-      <div key={product.id} className="product-card">
-        <div className="img-container" onClick={() => onProductClick(product)}>
-           <img src={product.image} alt={product.name} />
-           <button className="wishlist-btn" onClick={(e) => e.stopPropagation()}><FaHeart /></button>
-        </div>
-        <div className="info">
-          <span>{product.category}</span>
-          <h3 onClick={() => onProductClick(product)}>{product.name}</h3>
-          <div className="price-row">
-            <span className="price">${product.price}</span>
-            <button className="add-btn" onClick={() => onAddToCart(product)}>Añadir</button>
-          </div>
-        </div>
+// --- COMPONENTE: GRID DE PRODUCTOS ---
+const ProductGrid = ({ products, onProductClick, onAddToCart, onToggleFav, favorites }) => {
+  // Manejo de estado vacío si no hay resultados
+  if (products.length === 0) {
+    return (
+      <div className="empty-search" style={{textAlign: 'center', padding: '50px', width: '100%', gridColumn: '1 / -1'}}>
+        <FaSearchMinus size={50} color="#ccc" />
+        <p style={{marginTop: '10px', color: '#666'}}>No encontramos productos con ese nombre.</p>
       </div>
-    ))}
-  </div>
-);
+    );
+  }
 
-// --- VISTA 2: DETALLE DE PRODUCTO (PDP) ---
-const ProductDetail = ({ product, onBack, onAddToCart }) => {
+  return (
+    <div className="product-grid-adaptive">
+      {products.map(product => {
+        const isFav = favorites.some(f => f.id === product.id);
+        return (
+          <div key={product.id} className="product-card">
+            <div className="img-container" onClick={() => onProductClick(product)}>
+               <img src={product.image} alt={product.name} />
+               <button 
+                  className={`wishlist-btn ${isFav ? 'active' : ''}`} 
+                  onClick={(e) => { e.stopPropagation(); onToggleFav(product); }}
+               >
+                  <FaHeart />
+               </button>
+            </div>
+            <div className="info">
+              <span>{product.category}</span>
+              <h3 onClick={() => onProductClick(product)}>{product.name}</h3>
+              <div className="price-row">
+                <span className="price">${product.price}</span>
+                <button className="add-btn" onClick={() => onAddToCart(product)}>Añadir</button>
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
+// --- PDP ---
+const ProductDetail = ({ product, onBack, onAddToCart, onToggleFav, favorites }) => {
   if (!product) return null;
+  const isFav = favorites.some(f => f.id === product.id);
+
   return (
     <div className="pdp-container">
       <button className="back-btn" onClick={onBack}><FaArrowLeft /> Volver</button>
@@ -162,9 +202,22 @@ const ProductDetail = ({ product, onBack, onAddToCart }) => {
           <h1>{product.name}</h1>
           <p className="pdp-price">${product.price}</p>
           <p className="pdp-desc">{product.description}</p>
-          <button className="pdp-add-btn" onClick={() => onAddToCart(product)}>
-            Añadir al Carrito
-          </button>
+          <div className="pdp-actions" style={{display: 'flex', gap: '10px'}}>
+            <button className="pdp-add-btn" onClick={() => onAddToCart(product)}>
+              Añadir al Carrito
+            </button>
+            <button 
+              className={`pdp-fav-btn ${isFav ? 'active' : ''}`}
+              onClick={() => onToggleFav(product)}
+              style={{
+                background: 'white', border: '2px solid #eee', borderRadius: '8px', 
+                width: '60px', cursor: 'pointer', fontSize: '1.5rem',
+                color: isFav ? '#e74c3c' : '#ccc', display: 'flex', alignItems: 'center', justifyContent: 'center'
+              }}
+            >
+              <FaHeart />
+            </button>
+          </div>
           <div className="pdp-meta">
             <p>✅ Envío disponible a todo Ecuador</p>
             <p>🛡️ Garantía de fábrica</p>
@@ -175,17 +228,16 @@ const ProductDetail = ({ product, onBack, onAddToCart }) => {
   );
 };
 
-// --- VISTA 3: CARRITO DE COMPRAS ---
+// --- VISTA CARRITO ---
 const CartView = ({ cart, onUpdateQty, onRemove, onCheckout, onBack }) => {
   const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-
   return (
     <div className="cart-container-view">
       <h2>Tu Carrito de Compras</h2>
       {cart.length === 0 ? (
         <div className="empty-cart">
           <p>El carrito está vacío</p>
-          <button className="back-btn" onClick={onBack}>Ir a comprar</button>
+          <button className="back-btn" onClick={onBack} style={{justifyContent: 'center'}}>Ir a comprar</button>
         </div>
       ) : (
         <div className="cart-layout">
@@ -206,7 +258,6 @@ const CartView = ({ cart, onUpdateQty, onRemove, onCheckout, onBack }) => {
               </div>
             ))}
           </div>
-          
           <div className="cart-summary">
             <h3>Resumen</h3>
             <div className="summary-row">
@@ -217,7 +268,6 @@ const CartView = ({ cart, onUpdateQty, onRemove, onCheckout, onBack }) => {
               <span>Total:</span>
               <span>${total.toFixed(2)}</span>
             </div>
-            {/* Login simulado y Pago */}
             <button className="checkout-btn" onClick={onCheckout}>
               Ingresar como invitado y Pagar
             </button>
@@ -228,16 +278,42 @@ const CartView = ({ cart, onUpdateQty, onRemove, onCheckout, onBack }) => {
   );
 };
 
+// --- VISTA FAVORITOS ---
+const FavoritesView = ({ favorites, onToggleFav, onProductClick, onAddToCart, onBack }) => {
+  return (
+    <div className="favorites-view">
+      <h2>Mis Favoritos ❤️</h2>
+      {favorites.length === 0 ? (
+        <div className="empty-cart">
+          <FaHeartBroken size={50} color="#ccc" style={{marginBottom: '20px'}}/>
+          <p>Aún no tienes favoritos guardados.</p>
+          <button className="back-btn" onClick={onBack} style={{justifyContent: 'center'}}>Explorar productos</button>
+        </div>
+      ) : (
+        <ProductGrid 
+          products={favorites} 
+          onProductClick={onProductClick}
+          onAddToCart={onAddToCart}
+          onToggleFav={onToggleFav}
+          favorites={favorites}
+        />
+      )}
+    </div>
+  );
+};
+
 // --- APP PRINCIPAL ---
 function App() {
   const [screenSize, setScreenSize] = useState('desktop');
   
-  // ESTADOS DE LA APP
-  const [currentView, setCurrentView] = useState('home'); // 'home', 'detail', 'cart'
+  // ESTADOS
+  const [currentView, setCurrentView] = useState('home'); 
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [cart, setCart] = useState([]);
+  const [favorites, setFavorites] = useState([]);
+  const [searchTerm, setSearchTerm] = useState(''); // NUEVO: Estado del buscador
 
-  // Lógica de Adaptabilidad
+  // Adaptabilidad
   useEffect(() => {
     const handleResize = () => {
       const width = window.innerWidth;
@@ -250,7 +326,7 @@ function App() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // FUNCIONES DEL CARRITO
+  // FUNCIONES CARRITO
   const addToCart = (product) => {
     setCart(prevCart => {
       const existing = prevCart.find(item => item.id === product.id);
@@ -261,8 +337,7 @@ function App() {
       }
       return [...prevCart, {...product, quantity: 1}];
     });
-    // Opcional: Feedback visual simple
-    alert("Producto añadido");
+    alert("Producto añadido al carrito 🛒");
   };
 
   const updateQuantity = (id, delta) => {
@@ -279,11 +354,32 @@ function App() {
   };
 
   const handleCheckout = () => {
-    // Alerta sweet (simulada con confirm nativo o alert simple por ahora)
     alert("Pedido realizado con éxito 🏀\nGracias por tu compra como invitado.");
     setCart([]);
     setCurrentView('home');
   };
+
+  // FUNCIONES FAVORITOS
+  const toggleFavorite = (product) => {
+    setFavorites(prevFavs => {
+      const exists = prevFavs.some(item => item.id === product.id);
+      if (exists) return prevFavs.filter(item => item.id !== product.id);
+      else return [...prevFavs, product];
+    });
+  };
+
+  // FUNCIONES BÚSQUEDA (NUEVA LÓGICA)
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value);
+    // Si el usuario escribe, vamos al home para que vea los resultados
+    if (currentView !== 'home') setCurrentView('home');
+  };
+
+  // Filtramos los productos según lo que escriba el usuario
+  const filteredProducts = mockProducts.filter(product =>
+    product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    product.category.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   // NAVEGACIÓN
   const goToProduct = (product) => {
@@ -293,17 +389,38 @@ function App() {
 
   const navigate = (viewName) => {
     setCurrentView(viewName);
+    setSearchTerm(''); // Limpiamos buscador al cambiar de sección
     window.scrollTo(0, 0);
   };
 
-  // CALCULAR CANTIDAD TOTAL
   const cartTotalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
 
   return (
     <div className="App">
-      {screenSize === 'desktop' && <DesktopNav onNavigate={navigate} cartCount={cartTotalItems} />}
-      {screenSize === 'tablet' && <DesktopNav onNavigate={navigate} cartCount={cartTotalItems} />}
-      {screenSize === 'mobile' && <MobileNav onNavigate={navigate} cartCount={cartTotalItems} />}
+      {screenSize === 'desktop' && 
+        <DesktopNav 
+          onNavigate={navigate} 
+          cartCount={cartTotalItems} 
+          favCount={favorites.length}
+          searchTerm={searchTerm}
+          onSearch={handleSearch} 
+        />}
+      {screenSize === 'tablet' && 
+        <DesktopNav 
+          onNavigate={navigate} 
+          cartCount={cartTotalItems} 
+          favCount={favorites.length}
+          searchTerm={searchTerm}
+          onSearch={handleSearch} 
+        />}
+      {screenSize === 'mobile' && 
+        <MobileNav 
+          onNavigate={navigate} 
+          cartCount={cartTotalItems} 
+          favCount={favorites.length}
+          searchTerm={searchTerm}
+          onSearch={handleSearch} 
+        />}
 
       <main className={`main-container ${screenSize}`}>
         
@@ -316,11 +433,17 @@ function App() {
             </section>
 
             <section className="catalog">
-              <h3 className="section-title">Nuevos Lanzamientos</h3>
+              <h3 className="section-title">
+                {searchTerm ? `Resultados para: "${searchTerm}"` : "Nuevos Lanzamientos"}
+              </h3>
+              
+              {/* Usamos la lista filtrada 'filteredProducts' */}
               <ProductGrid 
-                products={mockProducts} 
+                products={filteredProducts} 
                 onProductClick={goToProduct}
                 onAddToCart={addToCart}
+                onToggleFav={toggleFavorite}
+                favorites={favorites}
               />
             </section>
 
@@ -338,6 +461,8 @@ function App() {
             product={selectedProduct} 
             onBack={() => navigate('home')}
             onAddToCart={addToCart}
+            onToggleFav={toggleFavorite}
+            favorites={favorites}
           />
         )}
 
@@ -348,6 +473,17 @@ function App() {
             onUpdateQty={updateQuantity}
             onRemove={removeFromCart}
             onCheckout={handleCheckout}
+            onBack={() => navigate('home')}
+          />
+        )}
+
+        {/* VISTA FAVORITOS */}
+        {currentView === 'favorites' && (
+          <FavoritesView 
+            favorites={favorites}
+            onToggleFav={toggleFavorite}
+            onProductClick={goToProduct}
+            onAddToCart={addToCart}
             onBack={() => navigate('home')}
           />
         )}
