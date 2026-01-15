@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
-import { FaShoppingCart, FaBars, FaTimes, FaSearch, FaUser, FaHeart, FaTrash, FaArrowLeft, FaMinus, FaPlus, FaHeartBroken, FaSearchMinus } from 'react-icons/fa';
+import { FaShoppingCart, FaBars, FaTimes, FaSearch, FaUser, FaHeart, FaTrash, FaArrowLeft, FaMinus, FaPlus, FaHeartBroken, FaSearchMinus, FaTruck, FaCreditCard, FaCheckCircle } from 'react-icons/fa';
 
 // --- MOCK DATA ---
 const mockProducts = [
@@ -54,7 +54,7 @@ const mockProducts = [
   }
 ];
 
-// --- NAVEGACIÓN PC (Con Buscador Funcional) ---
+// --- NAVEGACIÓN PC ---
 const DesktopNav = ({ onNavigate, cartCount, favCount, searchTerm, onSearch }) => (
   <nav className="desktop-nav">
     <div className="nav-left">
@@ -71,7 +71,7 @@ const DesktopNav = ({ onNavigate, cartCount, favCount, searchTerm, onSearch }) =
           type="text" 
           placeholder="Buscar productos..." 
           value={searchTerm}
-          onChange={onSearch} // Conectamos el evento
+          onChange={onSearch}
         />
         <button><FaSearch /></button>
       </div>
@@ -88,7 +88,7 @@ const DesktopNav = ({ onNavigate, cartCount, favCount, searchTerm, onSearch }) =
   </nav>
 );
 
-// --- NAVEGACIÓN MÓVIL (Con Buscador Funcional) ---
+// --- NAVEGACIÓN MÓVIL ---
 const MobileNav = ({ onNavigate, cartCount, favCount, searchTerm, onSearch }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -119,7 +119,7 @@ const MobileNav = ({ onNavigate, cartCount, favCount, searchTerm, onSearch }) =>
             type="text" 
             placeholder="Buscar productos..." 
             value={searchTerm}
-            onChange={onSearch} // Conectamos el evento
+            onChange={onSearch}
           />
           <button><FaSearch /></button>
         </div>
@@ -135,7 +135,6 @@ const MobileNav = ({ onNavigate, cartCount, favCount, searchTerm, onSearch }) =>
             <a onClick={() => {onNavigate('home'); setIsMenuOpen(false)}} className="mobile-link">Inicio</a>
             <a onClick={() => {onNavigate('favorites'); setIsMenuOpen(false)}} className="mobile-link">Mis Favoritos</a>
             <a onClick={() => {onNavigate('cart'); setIsMenuOpen(false)}} className="mobile-link">Mi Carrito</a>
-            <a className="mobile-link">Ingresar como invitado</a>
           </div>
         </div>
       )}
@@ -143,9 +142,8 @@ const MobileNav = ({ onNavigate, cartCount, favCount, searchTerm, onSearch }) =>
   );
 };
 
-// --- COMPONENTE: GRID DE PRODUCTOS ---
+// --- GRID DE PRODUCTOS ---
 const ProductGrid = ({ products, onProductClick, onAddToCart, onToggleFav, favorites }) => {
-  // Manejo de estado vacío si no hay resultados
   if (products.length === 0) {
     return (
       <div className="empty-search" style={{textAlign: 'center', padding: '50px', width: '100%', gridColumn: '1 / -1'}}>
@@ -228,7 +226,254 @@ const ProductDetail = ({ product, onBack, onAddToCart, onToggleFav, favorites })
   );
 };
 
-// --- VISTA CARRITO ---
+// --- 🔥 WIZARD PASO 1: ENVÍO ---
+const MobileCheckoutStep1 = ({ cart, onNext, onBack }) => {
+  const [formData, setFormData] = useState({
+    nombre: '',
+    direccion: '',
+    ciudad: 'Cuenca',
+    telefono: ''
+  });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (formData.nombre && formData.direccion && formData.telefono) {
+      onNext(formData);
+    } else {
+      alert('Por favor completa todos los campos');
+    }
+  };
+
+  return (
+    <div className="mobile-wizard">
+      <div className="wizard-header">
+        <button className="back-btn" onClick={onBack}>
+          <FaArrowLeft /> Volver al carrito
+        </button>
+        <div className="wizard-steps">
+          <div className="step active">
+            <FaTruck /> <span>Envío</span>
+          </div>
+          <div className="step-line"></div>
+          <div className="step">
+            <FaCreditCard /> <span>Pago</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="wizard-content">
+        <h2>Información de Envío</h2>
+        <form onSubmit={handleSubmit} className="checkout-form">
+          <div className="form-group">
+            <label>Nombre completo *</label>
+            <input 
+              type="text" 
+              value={formData.nombre}
+              onChange={(e) => setFormData({...formData, nombre: e.target.value})}
+              placeholder="Juan Pérez"
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Dirección *</label>
+            <input 
+              type="text" 
+              value={formData.direccion}
+              onChange={(e) => setFormData({...formData, direccion: e.target.value})}
+              placeholder="Av. Solano y Ordóñez Lasso"
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Ciudad *</label>
+            <select 
+              value={formData.ciudad}
+              onChange={(e) => setFormData({...formData, ciudad: e.target.value})}
+            >
+              <option>Cuenca</option>
+              <option>Quito</option>
+              <option>Guayaquil</option>
+              <option>Loja</option>
+              <option>Ambato</option>
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label>Teléfono *</label>
+            <input 
+              type="tel" 
+              value={formData.telefono}
+              onChange={(e) => setFormData({...formData, telefono: e.target.value})}
+              placeholder="0998765432"
+              required
+            />
+          </div>
+
+          <button type="submit" className="wizard-next-btn">
+            Continuar a Pago <FaArrowLeft style={{transform: 'rotate(180deg)'}} />
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+// --- 🔥 WIZARD PASO 2: PAGO ---
+const MobileCheckoutStep2 = ({ cart, shippingData, onBack, onConfirm }) => {
+  const [paymentData, setPaymentData] = useState({
+    metodoPago: 'tarjeta',
+    numeroTarjeta: '',
+    nombreTarjeta: '',
+    expiracion: '',
+    cvv: ''
+  });
+
+  const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (paymentData.metodoPago === 'efectivo') {
+      onConfirm({ ...shippingData, ...paymentData });
+    } else if (paymentData.numeroTarjeta && paymentData.nombreTarjeta && paymentData.expiracion && paymentData.cvv) {
+      onConfirm({ ...shippingData, ...paymentData });
+    } else {
+      alert('Por favor completa los datos de pago');
+    }
+  };
+
+  return (
+    <div className="mobile-wizard">
+      <div className="wizard-header">
+        <button className="back-btn" onClick={onBack}>
+          <FaArrowLeft /> Volver a Envío
+        </button>
+        <div className="wizard-steps">
+          <div className="step completed">
+            <FaCheckCircle style={{color: '#27ae60'}} /> <span>Envío</span>
+          </div>
+          <div className="step-line active"></div>
+          <div className="step active">
+            <FaCreditCard /> <span>Pago</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="wizard-content">
+        <h2>Método de Pago</h2>
+        
+        <div className="payment-methods">
+          <label className={`payment-option ${paymentData.metodoPago === 'tarjeta' ? 'active' : ''}`}>
+            <input 
+              type="radio" 
+              name="pago" 
+              value="tarjeta"
+              checked={paymentData.metodoPago === 'tarjeta'}
+              onChange={(e) => setPaymentData({...paymentData, metodoPago: e.target.value})}
+            />
+            <span>💳 Tarjeta de Crédito/Débito</span>
+          </label>
+
+          <label className={`payment-option ${paymentData.metodoPago === 'efectivo' ? 'active' : ''}`}>
+            <input 
+              type="radio" 
+              name="pago" 
+              value="efectivo"
+              checked={paymentData.metodoPago === 'efectivo'}
+              onChange={(e) => setPaymentData({...paymentData, metodoPago: e.target.value})}
+            />
+            <span>💵 Pago con la entrega</span>
+          </label>
+        </div>
+
+        <form onSubmit={handleSubmit} className="checkout-form">
+          {paymentData.metodoPago === 'tarjeta' && (
+            <>
+              <div className="form-group">
+                <label>Número de tarjeta *</label>
+                <input 
+                  type="text" 
+                  value={paymentData.numeroTarjeta}
+                  onChange={(e) => setPaymentData({...paymentData, numeroTarjeta: e.target.value})}
+                  placeholder="1234 5678 9012 3456"
+                  maxLength="19"
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Nombre en la tarjeta *</label>
+                <input 
+                  type="text" 
+                  value={paymentData.nombreTarjeta}
+                  onChange={(e) => setPaymentData({...paymentData, nombreTarjeta: e.target.value})}
+                  placeholder="JUAN PEREZ"
+                  required
+                />
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Vencimiento *</label>
+                  <input 
+                    type="text" 
+                    value={paymentData.expiracion}
+                    onChange={(e) => setPaymentData({...paymentData, expiracion: e.target.value})}
+                    placeholder="MM/AA"
+                    maxLength="5"
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>CVV *</label>
+                  <input 
+                    type="text" 
+                    value={paymentData.cvv}
+                    onChange={(e) => setPaymentData({...paymentData, cvv: e.target.value})}
+                    placeholder="123"
+                    maxLength="3"
+                    required
+                  />
+                </div>
+              </div>
+            </>
+          )}
+
+          {paymentData.metodoPago === 'efectivo' && (
+            <div className="payment-info">
+              <p>💵 Pagarás <strong>${total.toFixed(2)}</strong> en efectivo al momento de la entrega.</p>
+              <p>📦 El pedido llegará a: <strong>{shippingData.direccion}, {shippingData.ciudad}</strong></p>
+            </div>
+          )}
+
+          <div className="order-summary">
+            <h3>Resumen del pedido</h3>
+            <div className="summary-row">
+              <span>Subtotal ({cart.length} productos)</span>
+              <span>${total.toFixed(2)}</span>
+            </div>
+            <div className="summary-row">
+              <span>Envío</span>
+              <span>Gratis 🎉</span>
+            </div>
+            <div className="summary-row total">
+              <span>Total</span>
+              <span>${total.toFixed(2)}</span>
+            </div>
+          </div>
+
+          <button type="submit" className="wizard-confirm-btn">
+            Confirmar Pedido <FaCheckCircle />
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+// --- VISTA CARRITO (Desktop/Tablet + Móvil sin wizard) ---
 const CartView = ({ cart, onUpdateQty, onRemove, onCheckout, onBack }) => {
   const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   return (
@@ -269,7 +514,7 @@ const CartView = ({ cart, onUpdateQty, onRemove, onCheckout, onBack }) => {
               <span>${total.toFixed(2)}</span>
             </div>
             <button className="checkout-btn" onClick={onCheckout}>
-              Ingresar como invitado y Pagar
+              Proceder al Pago
             </button>
           </div>
         </div>
@@ -305,15 +550,14 @@ const FavoritesView = ({ favorites, onToggleFav, onProductClick, onAddToCart, on
 // --- APP PRINCIPAL ---
 function App() {
   const [screenSize, setScreenSize] = useState('desktop');
-  
-  // ESTADOS
   const [currentView, setCurrentView] = useState('home'); 
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [cart, setCart] = useState([]);
   const [favorites, setFavorites] = useState([]);
-  const [searchTerm, setSearchTerm] = useState(''); // NUEVO: Estado del buscador
+  const [searchTerm, setSearchTerm] = useState('');
+  const [checkoutStep, setCheckoutStep] = useState(0);
+  const [shippingData, setShippingData] = useState(null);
 
-  // Adaptabilidad
   useEffect(() => {
     const handleResize = () => {
       const width = window.innerWidth;
@@ -326,7 +570,6 @@ function App() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // FUNCIONES CARRITO
   const addToCart = (product) => {
     setCart(prevCart => {
       const existing = prevCart.find(item => item.id === product.id);
@@ -354,12 +597,23 @@ function App() {
   };
 
   const handleCheckout = () => {
-    alert("Pedido realizado con éxito 🏀\nGracias por tu compra como invitado.");
+    if (screenSize === 'mobile') {
+      setCheckoutStep(1);
+    } else {
+      alert("Pedido realizado con éxito 🏀\nGracias por tu compra.");
+      setCart([]);
+      setCurrentView('home');
+    }
+  };
+
+  const handleConfirmOrder = (paymentInfo) => {
+    alert("¡Pedido confirmado! 🎉\n\nLlegará a: " + paymentInfo.direccion + "\nMétodo: " + paymentInfo.metodoPago);
     setCart([]);
+    setCheckoutStep(0);
+    setShippingData(null);
     setCurrentView('home');
   };
 
-  // FUNCIONES FAVORITOS
   const toggleFavorite = (product) => {
     setFavorites(prevFavs => {
       const exists = prevFavs.some(item => item.id === product.id);
@@ -368,20 +622,16 @@ function App() {
     });
   };
 
-  // FUNCIONES BÚSQUEDA (NUEVA LÓGICA)
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
-    // Si el usuario escribe, vamos al home para que vea los resultados
     if (currentView !== 'home') setCurrentView('home');
   };
 
-  // Filtramos los productos según lo que escriba el usuario
   const filteredProducts = mockProducts.filter(product =>
     product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     product.category.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // NAVEGACIÓN
   const goToProduct = (product) => {
     setSelectedProduct(product);
     setCurrentView('detail');
@@ -389,7 +639,8 @@ function App() {
 
   const navigate = (viewName) => {
     setCurrentView(viewName);
-    setSearchTerm(''); // Limpiamos buscador al cambiar de sección
+    setSearchTerm('');
+    setCheckoutStep(0);
     window.scrollTo(0, 0);
   };
 
@@ -424,7 +675,6 @@ function App() {
 
       <main className={`main-container ${screenSize}`}>
         
-        {/* VISTA HOME */}
         {currentView === 'home' && (
           <>
             <section className="hero">
@@ -437,7 +687,6 @@ function App() {
                 {searchTerm ? `Resultados para: "${searchTerm}"` : "Nuevos Lanzamientos"}
               </h3>
               
-              {/* Usamos la lista filtrada 'filteredProducts' */}
               <ProductGrid 
                 products={filteredProducts} 
                 onProductClick={goToProduct}
@@ -455,7 +704,6 @@ function App() {
           </>
         )}
 
-        {/* VISTA DETALLE PRODUCTO */}
         {currentView === 'detail' && (
           <ProductDetail 
             product={selectedProduct} 
@@ -466,8 +714,7 @@ function App() {
           />
         )}
 
-        {/* VISTA CARRITO */}
-        {currentView === 'cart' && (
+        {currentView === 'cart' && checkoutStep === 0 && (
           <CartView 
             cart={cart}
             onUpdateQty={updateQuantity}
@@ -477,7 +724,23 @@ function App() {
           />
         )}
 
-        {/* VISTA FAVORITOS */}
+        {currentView === 'cart' && screenSize === 'mobile' && checkoutStep === 1 && (
+          <MobileCheckoutStep1 
+            cart={cart}
+            onNext={(data) => { setShippingData(data); setCheckoutStep(2); }}
+            onBack={() => setCheckoutStep(0)}
+          />
+        )}
+
+        {currentView === 'cart' && screenSize === 'mobile' && checkoutStep === 2 && (
+          <MobileCheckoutStep2 
+            cart={cart}
+            shippingData={shippingData}
+            onBack={() => setCheckoutStep(1)}
+            onConfirm={handleConfirmOrder}
+          />
+        )}
+
         {currentView === 'favorites' && (
           <FavoritesView 
             favorites={favorites}
